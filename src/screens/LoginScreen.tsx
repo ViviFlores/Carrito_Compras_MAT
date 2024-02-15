@@ -10,9 +10,10 @@ import { StackScreenProps } from '@react-navigation/stack'
 import { stylesGlobal } from '../theme/appTheme'
 import { User } from '../navigator/StackNavigator'
 import { CommonActions, useNavigation } from '@react-navigation/native'
+import { hasErrorFormLogin, showSnackBar, verifyExistUser } from '../commons/authValidations'
 
 
-interface LoginForm{
+export interface LoginForm{
   username: string;
   password: string;
   hasError: boolean;
@@ -53,8 +54,8 @@ export const LoginScreen = ({users}:LoginProps) => {
 
   //Funcion que envie los datos del formulario
   const handlerSendInfo=()=>{
-       //Validar formulario
-  if(form.username == '' || form.password == ''){ 
+  //Validar formulario
+  if(hasErrorFormLogin(form)){ 
     setForm(prevState=>({
       ...prevState,
       hasError:true
@@ -65,23 +66,17 @@ export const LoginScreen = ({users}:LoginProps) => {
     ...prevState,
     hasError:false
   }))
-  if(!verifyUser()){
-  Snackbar.show({
-    text: 'Usuario y/o password incorrecto!',
-    duration: Snackbar.LENGTH_SHORT,
-    backgroundColor:ERROR_COLOR,
-    textColor:'white'
-  });
-  return;
-  }
-  console.log(form);
-}
 
-  //Función que verifica si existe el usuario
-  const verifyUser=()=>{
-    const existUser=users.filter(user=>user.username == form.username && user.password == form.password)[0];
-    return existUser
+  // llamar función que verifica si el usuario existe en el arreglo
+  const existUser=verifyExistUser(users,form);
+  if(!existUser || existUser.password != form.password){
+    showSnackBar("Usuario y/o contraseña incorrecta!", ERROR_COLOR);
+    return;
   }
+  //console.log(form);
+  navigation.dispatch(CommonActions.navigate({name:'HomeScreen'}))
+
+}
 
   return (
     <View>
