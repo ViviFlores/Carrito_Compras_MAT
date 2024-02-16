@@ -7,9 +7,10 @@ import { ModalProduct } from './ModalProduct';
 
 interface Props{
     product: Product;
+    handlerChangeStockProduct:(idProducto: number, quantity: number)=>void;
 }
 
-export const CardProduct = ({product}: Props) => {
+export const CardProduct = ({product, handlerChangeStockProduct}: Props) => {
     //Hook para controlar el modal
     const [showModal, setShowModal]=useState(false);
   return (
@@ -26,7 +27,7 @@ export const CardProduct = ({product}: Props) => {
                 </View>
             </View>    
         </TouchableOpacity>
-        <ModalProduct product={product} isVisible={showModal} changeVisible={()=>setShowModal(!showModal)}/>
+        <ModalProduct product={product} isVisible={showModal} changeVisible={()=>setShowModal(!showModal)} handlerChangeStockProduct={handlerChangeStockProduct}/>
     </View>
   )
 }
